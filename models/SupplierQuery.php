@@ -17,7 +17,7 @@ class SupplierQuery extends Supplier
     public function rules()
     {
         return [
-            [['id'], 'integer'],
+            [['id'], 'string'],
             [['name', 'code', 't_status'], 'safe'],
         ];
     }
@@ -46,6 +46,9 @@ class SupplierQuery extends Supplier
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => 10,
+            ],
         ]);
 
         $this->load($params);
@@ -57,14 +60,43 @@ class SupplierQuery extends Supplier
         }
 
         // grid filtering conditions
-        $query->andFilterWhere([
-            'id' => $this->id,
-        ]);
+        $query->andFilterWhere($this->parseIdWhere($this->id));
 
         $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'code', $this->code])
-            ->andFilterWhere(['like', 't_status', $this->t_status]);
+            ->andFilterWhere(['like', 'code', $this->code]);
+
+        if ($this->t_status != "all") {
+            $query->andFilterWhere(['=', 't_status', $this->t_status]);
+        }
 
         return $dataProvider;
     }
+
+    private function parseIdWhere($idValue) {
+        if (empty($idValue)) {
+            return [];
+        }
+
+        $cleanIdValue = trim($idValue);
+        if (is_numeric($cleanIdValue)) {
+            return ['=', "id", $cleanIdValue];
+        }
+
+        $firstChar = substr($cleanIdValue, 0 , 1);
+        $secondChar = substr($cleanIdValue, 1 , 1);
+
+        $twiceOperator = $firstChar . $secondChar;
+        if (in_array($twiceOperator, ['>=', '<='])) {
+            $searchId = substr($cleanIdValue, 2);;
+            $where = [$twiceOperator, "id", $searchId];
+        } elseif (in_array($firstChar, ['>', '<', '='])) {
+            $searchId = substr($cleanIdValue, 1);
+            $where = [$firstChar, "id", $searchId];
+        } else {
+            $where = [];
+        }
+
+        return $where;
+    }
+
 }

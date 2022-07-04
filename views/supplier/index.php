@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
+use \yii\grid\CheckboxColumn;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
@@ -26,12 +27,15 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            ['class' => CheckboxColumn::class],
 
             'id',
             'name',
             'code',
-            't_status',
+            [
+                'attribute' => 't_status',
+                'filter'    => ['all' => 'all', 'ok' => 'ok', 'hold' => 'hold']
+            ],
             [
                 'class' => ActionColumn::className(),
                 'urlCreator' => function ($action, \app\models\Supplier $model, $key, $index, $column) {
