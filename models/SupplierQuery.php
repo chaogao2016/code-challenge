@@ -2,9 +2,9 @@
 
 namespace app\models;
 
+use app\models\Supplier;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Supplier;
 
 /**
  * SupplierQuery represents the model behind the search form of `app\models\Supplier`.
@@ -58,18 +58,47 @@ class SupplierQuery extends Supplier
             // $query->where('0=1');
             return $dataProvider;
         }
-
-        // grid filtering conditions
-        $query->andFilterWhere($this->parseIdWhere($this->id));
-
-        $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'code', $this->code]);
-
-        if ($this->t_status != "all") {
-            $query->andFilterWhere(['=', 't_status', $this->t_status]);
-        }
+        $this->dealWhere($query, $this->id, $this->name, $this->code, $this->t_status);
 
         return $dataProvider;
+    }
+
+    public function export($params)
+    {
+        $query = Supplier::find();
+
+        $id = $params['SupplierQuery']['id'] ?? "";
+        $name = $params['SupplierQuery']['name'] ?? "";
+        $code = $params['SupplierQuery']['code'] ?? "";
+        $t_status = $params['SupplierQuery']['t_status'] ?? "";
+
+        $this->dealWhere($query, $id, $name, $code, $t_status);
+        $isCheckAll = $params['isCheckAll'] ?? 0;
+        if (!$isCheckAll) {
+            $query->andFilterWhere($this->parseSelectIdsWhere($params['selectIds'] ?? []));
+        }
+
+        return $query->all();
+    }
+
+    private function dealWhere(&$query, $id, $name, $code, $t_status) {
+        // grid filtering conditions
+        $query->andFilterWhere($this->parseIdWhere($id));
+
+        $query->andFilterWhere(['like', 'name', $name])
+            ->andFilterWhere(['like', 'code', $code]);
+
+        if ($this->t_status != "all") {
+            $query->andFilterWhere(['=', 't_status', $t_status]);
+        }
+    }
+
+    private function parseSelectIdsWhere($selectIds) {
+        if (empty($selectIds)) {
+            return [];
+        }
+
+        return ['in', "id", $selectIds];
     }
 
     private function parseIdWhere($idValue) {

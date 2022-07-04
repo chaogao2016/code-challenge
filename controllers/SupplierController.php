@@ -131,4 +131,32 @@ class SupplierController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
+    public function actionExport() {
+        $cachePath = ROOT_PATH . "/runtime/cache/";
+        if (!is_dir($cachePath)) {
+            mkdir($cachePath);
+        }
+        list($usec, $sec) = explode(" ", microtime());
+        $msec = round($usec*1000);
+
+        $fileName = $cachePath . "supplier" . date("YmdHis") . $msec . ".csv";
+        $file = fopen($fileName,"a");
+
+        $searchModel = new SupplierQuery();
+        $dataList = $searchModel->export($this->request->post());
+
+        $firstRow = "id,name,code,t_status\n";
+        fwrite($file, $firstRow);
+
+        foreach ($dataList as $dataItem) {
+            $content = $dataItem->id . "," . $dataItem->name . "," . $dataItem->code . "," . $dataItem->t_status . "\n";
+            fwrite($file, $content);
+        }
+
+        fclose($file);
+
+        return \Yii::$app->response->sendFile($fileName);
+    }
+
 }

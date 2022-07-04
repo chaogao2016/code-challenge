@@ -45,6 +45,16 @@ class m220703_014141_supplier extends Migration
                 ["jack", "ccc", 'hold'],
                 ["nick", "ddd", 'ok'],
                 ["jerry", "eee", 'hold'],
+                ["dasd", "fff", 'ok'],
+                ["sdsdc", "ggg", 'hold'],
+                ["dlf", "hhh", 'hold'],
+                ["iasdu", "iii", 'ok'],
+                ["dadcc", "jjj", 'hold'],
+                ["jjii", "kkk", 'ok'],
+                ["mary", "lll", 'hold'],
+                ["lily", "mmm", 'hold'],
+                ["helon", "nnn", 'ok'],
+                ["mike", "ooo", 'hold'],
             ]
         );
     }
