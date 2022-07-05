@@ -1,1 +1,1 @@
-web: php yii serve --port=80
+web: vendor/bin/heroku-php-apache2 web/
