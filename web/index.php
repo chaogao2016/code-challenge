@@ -1,5 +1,7 @@
 <?php
 
+ini_set('variables_order', 'EGPCS');
+
 // comment out the following two lines when deployed to production
 defined('YII_DEBUG') or define('YII_DEBUG', getenv('YII_DEBUG'));
 defined('YII_ENV') or define('YII_ENV', getenv('YII_ENV'));
